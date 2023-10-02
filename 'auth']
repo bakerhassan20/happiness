@@ -1,0 +1,24 @@
+
+   UnexpectedValueException 
+
+  Invalid route action: [App\Http\Controllers\API\AuthController].
+
+  at vendor\laravel\framework\src\Illuminate\Routing\RouteAction.php:92
+     88▕      */
+     89▕     protected static function makeInvokable($action)
+     90▕     {
+     91▕         if (! method_exists($action, '__invoke')) {
+  ➜  92▕             throw new UnexpectedValueException("Invalid route action: [{$action}].");
+     93▕         }
+     94▕ 
+     95▕         return $action.'@__invoke';
+     96▕     }
+
+  i   `App\Http\Controllers\API\AuthController` is not invokable: The controller class `App\Http\Controllers\API\AuthController` is not invokable. Did you forget to add the `__invoke` method or is the controller's method missing in your routes file? 
+
+  1   vendor\laravel\framework\src\Illuminate\Routing\RouteAction.php:47
+      Illuminate\Routing\RouteAction::makeInvokable("App\Http\Controllers\API\AuthController")
+
+  2   vendor\laravel\framework\src\Illuminate\Routing\Route.php:191
+      Illuminate\Routing\RouteAction::parse("api/auth/register", ["App\Http\Controllers\API\AuthController", "App\Http\Controllers\API\AuthController"])
+
