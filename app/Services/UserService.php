@@ -13,8 +13,8 @@ class UserService
         $user->code=$code;
         $user->save();
 
-        if ($user)
-            Mail::to($user->email)->send(new VerifyCodeMail($code));
+        //if ($user)
+          //  Mail::to($user->email)->send(new VerifyCodeMail($code));
         return TRUE;
     }
 

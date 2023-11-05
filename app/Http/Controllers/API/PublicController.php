@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\User;
+use App\Models\Favorite;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\PostCollection;
 use App\Http\Resources\UserCollection;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Validator;
@@ -42,6 +45,16 @@ class PublicController extends AppBaseController
         })->get();
 
         return $this->sendResponse(["user" => new UserCollection($users)], 'filter');
+
+    }
+
+
+
+    public function favorite(){
+        $user = Auth::user();
+        $user = User::find($user->id);
+        $posts =  $user->favorites()->paginate(10);
+        return $this->json_custom_response(new PostCollection($posts));
 
     }
 

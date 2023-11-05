@@ -43,6 +43,10 @@ class AppBaseController extends Controller
         ], 200);
     }
 
+    function json_custom_response( $response, $status_code = 200 )
+    {
+        return response()->json($response,$status_code);
+    }
 
 
 }

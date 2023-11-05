@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Models\Post;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -11,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use App\Http\Resources\PostCollection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\API\AppBaseController;
@@ -28,10 +30,17 @@ class ProfileController extends AppBaseController
 
 
 
-    public function get_profile(Request $request){
-        $user = User::find('id',Auth::id());
+    public function get_profile($userId){
+        $user = User::find($userId);
+        return $this->json_custom_response(["user" => new UserResource($user)]);
+    }
 
-        return $this->sendResponse(["user" => new UserResource($user)], 'User Information');
+    public function get_posts($userId){
+        $user = User::find($userId);
+
+        $posts = Post::where('user_id',$user->id)->paginate(10);
+
+          return $this->json_custom_response(new PostCollection($posts));
     }
 
 
@@ -99,7 +108,7 @@ class ProfileController extends AppBaseController
                   if($image_user->move(public_path('uploads/users/'), $image_name)){
                     // delete old img
                       $imagePath = Str::after($user->photo, url(url('').'/'));
-                      
+
                         if(File::exists($imagePath) && $user->photo != 'http://127.0.0.1:8000/uploads/users/default.jpg')
                         {
                             File::delete($imagePath);
@@ -126,6 +135,11 @@ class ProfileController extends AppBaseController
     }
 
 
+    public function delete_account(){
+        $user =auth()->user();
+        $user->delete();
+        return $this->sendSuccess('Account deleted successfully');
+    } 
 
     public function follow($userId)
     {

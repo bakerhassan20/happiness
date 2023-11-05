@@ -91,7 +91,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function favorites()
     {
-        return $this->hasMany(Favorite::class);
+        return $this->belongsToMany(Post::class, 'favorites', 'user_id', 'post_id');
     }
 
     public function funies()
@@ -112,7 +112,7 @@ class User extends Authenticatable implements JWTSubject
             ->withTimestamps();
     }
 
-    
+
      // Method: Check if the user is following another user
      public function isFollowing(User $user)
      {

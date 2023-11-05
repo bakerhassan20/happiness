@@ -7,12 +7,15 @@ use App\Models\Funny;
 use App\Models\Share;
 use App\Models\Favorite;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use App\Http\Requests\PostRequest;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PostResource;
 use App\Http\Resources\PostCollection;
+use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\API\AppBaseController;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class PostsController extends AppBaseController
@@ -26,8 +29,8 @@ class PostsController extends AppBaseController
     public function index()
     {
         $posts = Post::inRandomOrder()->paginate(10);
-      //  return response()->json($posts);
-        return $this->sendResponse(new PostCollection($posts), 'Get posts successfully');
+
+        return $this->json_custom_response(new PostCollection($posts));
 
     }
 
@@ -42,6 +45,62 @@ class PostsController extends AppBaseController
 
         return $this->sendResponse(["post" => new PostResource($post)], 'Post Created successfully');
     }
+
+    public function update(Request $request){
+
+
+        $validator = Validator::make($request->all(), [
+            'joke'=>'required',
+            'post_id'=>'required',
+        ]);
+        if ($validator->fails()) {
+
+            throw new HttpResponseException(response()->json([
+                'errors' => $validator->errors(),
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY));
+
+        }
+        $data = $request->all();
+        $user = auth()->user();
+        $post = Post::where('id',$data['post_id'])->where('user_id',$user->id)->first();
+
+        if($post){
+            $post->update($request->only([
+                'joke',
+            ]));
+
+            return $this->sendResponse(["post" => new PostResource($post)], 'Post update successfully');
+        }
+
+        return $this->sendError('Post not found.');
+
+    }
+
+    public function delete(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            'post_id'=>'required',
+        ]);
+        if ($validator->fails()) {
+
+            throw new HttpResponseException(response()->json([
+                'errors' => $validator->errors(),
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY));
+
+        }
+        $data = $request->all();
+        $user = auth()->user();
+        $post = Post::where('id',$data['post_id'])->where('user_id',$user->id)->first();
+
+        if($post){
+            $post->delete();
+            return $this->sendSuccess('Post deleted successfully');
+        }
+
+        return $this->sendError('Post not found.');
+
+    }
+
 
     public function Funny_Post(Request $request,$postId){
 
@@ -128,6 +187,6 @@ class PostsController extends AppBaseController
     }
 
 
-   
+
 
 }

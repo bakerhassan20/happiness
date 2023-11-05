@@ -20,6 +20,9 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'photo' => $this->photo,
             'created_at' =>  $this->created_at?->format('Y-m-d') ?? null,
+            'Posts' =>  $this->posts->count(),
+            'followings' =>  $this->followings->count(),
+            'followers' =>  $this->followers->count(),
             ];
     }
 }
