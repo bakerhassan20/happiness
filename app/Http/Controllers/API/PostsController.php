@@ -126,7 +126,7 @@ class PostsController extends AppBaseController
         $funny->post_id = $post->id;
         $funny->save();
         $post->increment('reactions');
-        return $this->sendResponse(["reactions" => $post->reactions], 'Post Funny Successfully');
+        return $this->sendResponse(["reactions" => $post->reactions,'isfunny' => $post->checkFunny(),], 'Post Funny Successfully');
     }
 
 
@@ -139,6 +139,7 @@ class PostsController extends AppBaseController
             $post = Post::findOrFail($postId);
 
             if (!$post) {
+
                 return $this->sendError('Post not found.');
             }
 
@@ -147,7 +148,8 @@ class PostsController extends AppBaseController
             if ($existingFavorite) {
 
                 $existingFavorite->delete();
-                return $this->sendSuccess('Post removed from favorites successfully');
+                return $this->sendResponse([ 'isfavorite' => $post->checkfavorite()], 'Post removed from favorites successfully');
+                //return $this->sendSuccess('Post removed from favorites successfully');
             }
 
             // Create a new favorite
@@ -156,7 +158,8 @@ class PostsController extends AppBaseController
             $favorite->post_id = $post->id;
             $favorite->save();
 
-            return $this->sendSuccess('Post added to favorites successfully');
+            return $this->sendResponse([ 'isfavorite' => $post->checkfavorite()], 'Post added to favorites successfully');
+            //return $this->sendSuccess('Post added to favorites successfully');
 
         } catch (ModelNotFoundException $e) {
             return $this->sendError('Post not found.');
