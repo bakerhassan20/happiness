@@ -117,7 +117,7 @@ class PostsController extends AppBaseController
 
             $existingFunny->delete();
             $post->decrement('reactions');
-            return $this->sendResponse(["reactions" => $post->reactions], 'Post Unfunny Successfully');
+            return $this->sendResponse(["reactions" => $post->reactions,'isfunny' => $post->checkFunny()], 'Post Unfunny Successfully');
 
         }
 
@@ -126,7 +126,7 @@ class PostsController extends AppBaseController
         $funny->post_id = $post->id;
         $funny->save();
         $post->increment('reactions');
-        return $this->sendResponse(["reactions" => $post->reactions,'isfunny' => $post->checkFunny(),], 'Post Funny Successfully');
+        return $this->sendResponse(["reactions" => $post->reactions,'isfunny' => $post->checkFunny()], 'Post Funny Successfully');
     }
 
 
