@@ -12,6 +12,7 @@ use App\Http\Requests\PostRequest;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PostResource;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\PostCollection;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\API\AppBaseController;
@@ -28,8 +29,13 @@ class PostsController extends AppBaseController
 
     public function index()
     {
+        $user = Auth::user();
         $posts = Post::inRandomOrder()->paginate(10);
-
+       /*  $posts = Post::select('posts.*')
+        ->leftJoin('funnies', 'posts.id', '=', 'funnies.post_id')
+        ->groupBy('posts.id', 'posts.user_id', 'posts.joke', 'posts.reactions', 'posts.shares', 'posts.created_at', 'posts.updated_at')
+        ->orderByRaw('posts.user_id = '.$user->id. ' DESC,MAX(posts.created_at) DESC, COUNT(funnies.id) DESC')
+        ->paginate(10); */
         return $this->json_custom_response(new PostCollection($posts));
 
     }

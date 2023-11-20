@@ -139,7 +139,7 @@ class ProfileController extends AppBaseController
         $user =auth()->user();
         $user->delete();
         return $this->sendSuccess('Account deleted successfully');
-    } 
+    }
 
     public function follow($userId)
     {
@@ -154,11 +154,13 @@ class ProfileController extends AppBaseController
         if (!Auth::user()->isFollowing($user)) {
 
             Auth::user()->follow($user);
-            return $this->sendSuccess('You are now following '  . $user->name);
+            return $this->sendResponse(["isFollowing" => !Auth::user()->isFollowing($user)], 'You are now following '  . $user->name);
+           // return $this->sendSuccess('You are now following '  . $user->name);
 
         }else{
                 Auth::user()->unfollow($user);
-                return $this->sendSuccess('You have unfollowed ' . $user->name);
+                return $this->sendResponse(["isFollowing" => !Auth::user()->isFollowing($user)], 'You have unfollowed ' . $user->name);
+              //  return $this->sendSuccess('You have unfollowed ' . $user->name);
 
         }
 
