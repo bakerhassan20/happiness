@@ -43,6 +43,8 @@ Route::group(['middleware'=>'api','prefix'=>'profile'],function(){
     Route::delete('/delete-account',[ProfileController::class,'delete_account']);
 
     Route::post('/follow/{userId}', [ProfileController::class, 'follow'])->name('follow');
+    Route::get('/followers/{userId}', [ProfileController::class, 'getFollowers']);
+    Route::get('/followings/{userId}', [ProfileController::class, 'getfollowings']);
 
 
 });

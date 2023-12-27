@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\API\AppBaseController;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ProfileController extends AppBaseController
 {
@@ -185,6 +186,37 @@ class ProfileController extends AppBaseController
 
         } catch (\Throwable $th) {
                  return $this->sendError('User not found.');
+        }
+
+
+    }
+
+
+     public function getFollowers($userId)
+    {
+
+        try {
+            $user = User::findOrFail($userId);
+            $followers = $user->followers()->get();
+          
+            return response()->json(['followers' => $followers]);
+        } catch (ModelNotFoundException $e) {
+            return $this->sendError('User not found.');
+        }
+
+    }
+
+    public function getfollowings($userId)
+    {
+        try {
+
+            $user = User::findOrFail($userId);
+            $followers = $user->followings()->get();
+
+            return response()->json(['followers' => $followers]);
+
+        } catch (ModelNotFoundException $e) {
+            return $this->sendError('User not found.');
         }
 
 
