@@ -22,6 +22,7 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'type',
+        'bio',
         'photo',
         'status',
         'password',
@@ -35,6 +36,7 @@ class User extends Authenticatable implements JWTSubject
         'device_token'=>'string',
         'name'=>'string',
         'photo'=>'string',
+        'bio'=>'string',
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'third_party' => 'boolean',
@@ -45,6 +47,7 @@ class User extends Authenticatable implements JWTSubject
         'name' => 'required|string',
         'third_party' => 'required|boolean',
         'device_token' => 'string',
+        'bio' => 'string',
         'password' => [
             'required',
             'string',

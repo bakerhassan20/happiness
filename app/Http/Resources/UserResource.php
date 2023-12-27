@@ -19,6 +19,7 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'name' => $this->name,
             'photo' => $this->photo,
+            'bio' => $this->bio,
             'created_at' =>  $this->created_at?->format('Y-m-d') ?? null,
             'Posts' =>  $this->posts->count(),
             'followings' =>  $this->followings->count(),

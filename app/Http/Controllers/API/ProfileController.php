@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\PostCollection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -48,11 +49,9 @@ class ProfileController extends AppBaseController
     public function update_profile(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name'=>'required',
-            'city_id'=>'required',
+            'name'=>'required|string',
+            'bio'=>'string',
             'email'=>'required|unique:users,email,'.Auth::id(),
-            // 'mobile'=>'required|unique:users,mobile,'.Auth::id(),
-
         ]);
         if ($validator->fails()) {
 
@@ -62,22 +61,15 @@ class ProfileController extends AppBaseController
 
         }
         if ($validator->passes()){
-            $data = $request->all();
             $user = User::query()->where('id',Auth::id())->first();
             $user ->update([
                 'name'=>$request->name,
                 'email'=>$request->email,
-                // 'mobile'=>$request->mobile,
-                'city_id' => $request->city_id,
+                'bio' => $request->bio,
             ]);
-            $customer=Customer::query()->where('user_id',Auth::id())->update($data);
-            return response([
-                'status'=>true,
-                'message_en'=>'operation accomplished successfully',
-                'message_ar'=>'تمت العملية بنجاح',
-                'data'=>$user,
-                'code'=>200
-            ]);
+
+
+            return $this->sendResponse(["user" => new UserResource($user)], 'operation accomplished successfully');
         }
 
     }
@@ -135,6 +127,33 @@ class ProfileController extends AppBaseController
     }
 
 
+     public function changePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'current_password' => 'required',
+            'new_password' => 'required|string|min:8|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+
+        $user = User::find(auth()->id());
+
+        if (!Hash::check($request->input('current_password'), $user->password)) {
+
+            return $this->sendError('Current password is incorrect.',422);
+
+        }
+
+        $user->password = bcrypt($request->input('new_password'));
+        $user->save();
+
+        return $this->sendSuccess('Password changed successfully');
+
+    }
+
+
     public function delete_account(){
         $user =auth()->user();
         $user->delete();
@@ -148,7 +167,7 @@ class ProfileController extends AppBaseController
             $user= User::findOrFail($userId);
 
         if (Auth::user()->id === $user->id) {
-            return $this->sendError('You cannot follow yourself.');
+            return $this->sendError('You cannot follow yourself.',422);
         }
 
         if (!Auth::user()->isFollowing($user)) {

@@ -30,7 +30,7 @@ class PostsController extends AppBaseController
     public function index()
     {
         $user = Auth::user();
-        $posts = Post::inRandomOrder()->paginate(10);
+        $posts = Post::inRandomOrder()->paginate(15);
        /*  $posts = Post::select('posts.*')
         ->leftJoin('funnies', 'posts.id', '=', 'funnies.post_id')
         ->groupBy('posts.id', 'posts.user_id', 'posts.joke', 'posts.reactions', 'posts.shares', 'posts.created_at', 'posts.updated_at')

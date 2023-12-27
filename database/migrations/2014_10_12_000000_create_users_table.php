@@ -18,6 +18,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('code')->nullable();
+            $table->string('bio')->nullable();
             $table->string('device_token')->nullable();
             $table->string('photo')->default('default.jpg');
             $table->enum('type' , ['ADMIN' , 'USER'])->default('USER');

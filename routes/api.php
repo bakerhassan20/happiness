@@ -37,7 +37,9 @@ Route::group(['middleware'=>'api','prefix'=>'profile'],function(){
 
     Route::get('/{userId}', [ProfileController::class, 'get_profile']);
     Route::get('/{userId}/posts', [ProfileController::class, 'get_posts']);
+    Route::post('/update-profile',[ProfileController::class,'update_profile']);
     Route::post('/update-photo',[ProfileController::class,'update_photo']);
+    Route::post('/change-password',[ProfileController::class,'changePassword']);
     Route::delete('/delete-account',[ProfileController::class,'delete_account']);
 
     Route::post('/follow/{userId}', [ProfileController::class, 'follow'])->name('follow');
