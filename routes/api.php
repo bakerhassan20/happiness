@@ -59,6 +59,7 @@ Route::group(['middleware'=>'api','prefix'=>'post'],function(){
     Route::post('funny/{postId}',[PostsController::class, 'Funny_Post']);
     Route::post('add-remove-favorites/{postId}', [PostsController::class, 'add_Remove_Favorites']);
     Route::post('share/{postId}', [PostsController::class, 'sharePost']);
+    Route::get('users-reacted-post/{postId}', [PostsController::class, 'getUsersReactedToPost']);
 
 
 });

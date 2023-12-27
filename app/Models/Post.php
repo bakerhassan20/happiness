@@ -28,6 +28,11 @@ class Post extends Model
         return $this->hasMany(Funny::class);
     }
 
+    public function reactedByUsers()
+    {
+        return $this->belongsToMany(User::class, 'funnies', 'post_id', 'user_id');
+    }
+
      public function shares()
     {
         return $this->hasMany(Share::class);

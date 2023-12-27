@@ -132,6 +132,14 @@ class PostsController extends AppBaseController
         $funny->post_id = $post->id;
         $funny->save();
         $post->increment('reactions');
+
+
+
+        $postId = $post->id;
+        $userName = $user->name;
+
+        $this->sendFCMNotification($post->user->device_token, $postId, $userName);
+
         return $this->sendResponse(["reactions" => $post->reactions,'isfunny' => $post->checkFunny()], 'Post Funny Successfully');
     }
 
@@ -196,6 +204,55 @@ class PostsController extends AppBaseController
     }
 
 
+    public function getUsersReactedToPost($postId)
+    {
+        $post = Post::findOrFail($postId);
+        $reactedUsers = $post->reactedByUsers()->select('name','photo')->get();
+        return response()->json(['reacted_users' => $reactedUsers]);
+    }
+
+
+
+    private function sendFCMNotification($fcmToken, $postId, $userName)
+    {
+        $serverKey = 'your-firebase-server-key';
+
+        $url = 'https://fcm.googleapis.com/fcm/send';
+
+        $headers = [
+            'Authorization: key=' . $serverKey,
+            'Content-Type: application/json',
+        ];
+
+        $data = [
+            'to' => $fcmToken,
+            'notification' => [
+                'title' => 'New Reaction!',
+                'body' => $userName .'reacted to your post.',
+            ],
+            'data' => [
+                'post_id' => $postId,
+                'userName' => $userName,
+            ],
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Only for local testing, do not use in production
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+
+        $response = curl_exec($ch);
+
+        if (curl_errno($ch)) {
+            // Handle error
+            error_log('FCM Notification Error: ' . curl_error($ch));
+        }
+
+        curl_close($ch);
+    }
 
 
 }

@@ -197,8 +197,8 @@ class ProfileController extends AppBaseController
 
         try {
             $user = User::findOrFail($userId);
-            $followers = $user->followers()->get();
-          
+            $followers = $user->followers()->select('users.id','name','photo')->get();
+
             return response()->json(['followers' => $followers]);
         } catch (ModelNotFoundException $e) {
             return $this->sendError('User not found.');
@@ -211,7 +211,7 @@ class ProfileController extends AppBaseController
         try {
 
             $user = User::findOrFail($userId);
-            $followers = $user->followings()->get();
+            $followers = $user->followings()->select('users.id','name','photo')->get();
 
             return response()->json(['followers' => $followers]);
 
